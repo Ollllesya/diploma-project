@@ -1,0 +1,29 @@
+private func runPOIMigrationIfNeeded() {
+    // уже выполняли? – выходим
+    guard !UserDefaults.standard.bool(forKey: "didFixPOI") else { return }
+    
+    var changed = false
+    
+    for i in waypointManager.waypoints.indices {
+        var wp = waypointManager.waypoints[i]
+        
+        // ---------
+        // Здесь ваша логика, КАК понять, что
+        // именно эта точка на самом деле была POI.
+        // Например, можно проверять название или placeId,
+        // если старые POI помечались особым образом.
+        // Ниже – пример «заглушка».
+        // ---------
+        if wp.title.lowercased().contains("(poi)") {
+            wp.isPOI = true
+            waypointManager.waypoints[i] = wp
+            changed = true
+        }
+    }
+    
+    if changed {
+        waypointManager.save()      // переписываем в UserDefaults
+    }
+    // помечаем, что миграция пройдена
+    UserDefaults.standard.set(true, forKey: "didFixPOI")
+}
